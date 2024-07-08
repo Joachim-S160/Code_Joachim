@@ -80,8 +80,8 @@ The script `NVE.py` performs the NVE molecular dynamics simulation on the combin
 - The scripts assume that the lattice parameters and angles of the solid and liquid phases are compatible for combining.
 - For the purpose of this repository, namely showing code representative of my work, I have changed nothing to code already created, and just put it here with this readme file
 - With the insights I have now, a year later, I would change a few things, especially for larger scale projects:
--- Create a more clear workflow
--- Remove the redundancies across scripts
--- Implementing usefull classes
--- More error handling through try and except statements
--- Add unit tests
+	- Create a more clear workflow
+	- Remove the redundancies across scripts
+	- Implementing usefull classes
+	- More error handling through try and except statements
+	- Add unit tests
