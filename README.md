@@ -1,6 +1,6 @@
 # Melting Point Prediction using Discrete, Heating Curve, and Two-Phase Coexistence Methods
 
-This repository contains source code for predicting the melting points of halides using the CHGNet model with three methods: the discrete temperature density method, the heating curve method, and the two-phase coexistence method. Additionally, the repository includes a script for calculating cohesive energy. Note that this repository includes only the source code and scripts; it does not include data analysis or results.
+This repository contains source code for predicting the melting points of halides using the CHGNet model with three methods: the discrete temperature density method, the heating curve method, and the two-phase coexistence method. Additionally, the repository includes scripts for calculating cohesive energy and combining structures. Note that this repository includes only source code and scripts; it does not include data analysis or results.
 
 ## Files in this Repository
 
@@ -9,8 +9,11 @@ This repository contains source code for predicting the melting points of halide
 - `heatingcurve_method.py`: Python script for running molecular dynamics simulations using the heating curve method.
 - `Meltingpoints_2phase_coexistence.py`: Python script for running molecular dynamics simulations using the two-phase coexistence method.
 - `Cohesive_energy.py`: Python script for calculating the cohesive energy of a structure using the CHGNet model.
+- `Combining_structures.py`: Python script for combining a solid and a fluid structure into a single structure for the two-phase coexistence method.
+- `relax.py`: Python script for relaxing a structure before combining phases or running simulations.
+- `NVE.py`: Python script for running an NVE (constant number of particles, volume, and energy) molecular dynamics simulation.
 - `README.md`: This file, providing an overview of the repository.
-- `get_data.py`: General purpose script used to process and analyze simulation data.
+- `get_data.py`: General-purpose script used to process and analyze simulation data.
 
 ## Project Description
 
@@ -42,36 +45,42 @@ The two-phase coexistence method, implemented in `Meltingpoints_2phase_coexisten
 
 The process involves:
 
-1. **Relaxing the Solid Structure:** The structure is relaxed to ensure that atoms are in positions of lower potential energy.
-2. **Creating Supercell:** A supercell of the relaxed solid structure is created.
-3. **Molecular Dynamics Simulations:** Simulations are run to obtain the fluid phase at a specified temperature. The results are stored in trajectory and log files.
+1. **Relaxing the Solid Structure:** The structure is relaxed to ensure that atoms are in positions of lower potential energy. This step is performed using the `relax.py` script, which uses the CHGNet model to optimize the atomic positions of the structure while keeping the cell size fixed.
 
-**Important Note:** The molecular dynamics simulation can become unstable if the structure is not relaxed first. Ensure to follow the relaxation step before running the simulations.
+2. **Combining Structures:** After relaxation, the `Combining_structures.py` script combines the relaxed solid and fluid structures into a single structure, incorporating a vacuum layer to separate the phases and avoid interactions at the boundaries. This combined structure is saved as a CIF file and used for further simulations.
 
-### Cohesive Energy Calculation
+3. **Running Molecular Dynamics Simulations:** Molecular dynamics simulations are then conducted on the combined structure to determine the melting point. The `Meltingpoints_2phase_coexistence.py` script runs these simulations and analyzes the phase coexistence to estimate the melting temperature.
 
-The `Cohesive_energy.py` script calculates the cohesive energy of a structure using the CHGNet model. Cohesive energy is the energy needed to transform one mole of a crystalline solid at 0 K to isolated gas-phase molecules. This script involves:
+**Important Note:** Ensure that the structure is relaxed before combining phases or running simulations to avoid instability and inaccuracies.
 
-1. **Relaxing Structures:** Both the unit cell and a single molecule are relaxed to minimize potential energy.
-2. **Energy Prediction:** The CHGNet model predicts the energy of the relaxed unit cell and the relaxed single molecule.
-3. **Cohesive Energy Calculation:** The cohesive energy is computed as the difference between the predicted energy of the unit cell and the single molecule.
+#### Relaxation Script
 
-The `plot_cohesive_energy` function generates a plot of cohesive energy versus material.
+The `relax.py` script is used to relax a structure before combining phases or running molecular dynamics simulations. This script performs the following tasks:
 
-### Generating Images
+- **Loading the Structure and Model:** It loads the structure from an input file and the CHGNet model.
+- **Performing Relaxation:** It performs ionic relaxation to minimize the potential energy of the structure while keeping the cell size fixed.
+- **Saving the Relaxed Structure:** The relaxed structure is saved to a CIF file for further use in combining structures or running simulations.
 
-Previously, the `get_data.py` script was used to process the simulation data and generate images showing various plots. These images provided visual insights into the behavior of the system at various temperatures and times, helping to identify the melting point. As of the latest update, these images have been removed.
+#### Combining Structures
 
-## Results and Discussion
+The `Combining_structures.py` script combines the solid and fluid phases into a single structure for the two-phase coexistence method. The script performs the following steps:
 
-For detailed results and discussions on the methodologies and findings, please refer to the `Internship_report_Joachim_.pdf` file. This report contains comprehensive analysis and interpretations of the data obtained from the different melting point prediction methods and cohesive energy calculations.
+1. **Loading Structures:** It loads the solid and fluid structures from CIF files.
+2. **Creating Vacuum Layer:** It adds a vacuum layer between the solid and fluid phases to prevent interactions at the boundaries.
+3. **Combining Structures:** It places the solid and fluid phases into a combined lattice with the vacuum layer and saves the final structure as a CIF file.
 
-## Note
+#### NVE Simulation Script
 
-This repository contains only the source code and scripts used for melting point prediction and cohesive energy calculations. Data analysis and detailed results are not included here. Please refer to the `Internship_report_Joachim_.pdf` for results and discussions.
+The `NVE.py` script runs an NVE (constant Number of particles, Volume, and Energy) molecular dynamics simulation. This script performs:
 
-## Conclusion
+1. **Loading the Structure:** It reads the structure from a CIF file using ASE.
+2. **Structure Expansion and Relaxation:** It expands the structure slightly, performs relaxation to minimize potential energy, and saves the relaxed structure.
+3. **Running the NVE Simulation:** It initializes the simulation with Maxwell-Boltzmann distributed velocities at the specified temperature and runs the simulation, storing the trajectory and log files.
 
-This repository provides a comprehensive set of tools and scripts for predicting melting points using the CHGNet model with discrete, heating curve, and two-phase coexistence methods, as well as for calculating cohesive energy. The scripts and methodologies can be adapted for other similar studies in material science.
+**Usage of `NVE.py`:**
 
-For more details, refer to the `Internship_report_Joachim_.pdf`.
+- The script begins by loading the CHGNet model and the structure from an input file.
+- It optionally expands the structure and performs ionic relaxation.
+- It then sets up and runs an NVE molecular dynamics simulation, storing results in trajectory and log files.
+
+This section ensures that structures are properly prepared and simulations are conducted accurately, contributing to reliable melting point predictions.
