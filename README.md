@@ -21,15 +21,10 @@ This repository contains source code for predicting the melting points of halide
 
 The method implemented in `Meltingpoints_discrete_Tr.py` is based on the "heat-until-melts" approach. This involves performing multiple constant pressure and temperature simulations on a solid material. The temperature at which the material's density shows a discontinuity indicates the melting point.
 
-However, it should be noted that:
-
-- **The heat-until-melts method, with discrete points, is certainly not ideal.** This method provides only an upper bound to the melting point due to superheating effects, which can result in overestimations of the transition temperature.
-
-Given these limitations, future work will focus on implementing the heating curve method, which involves nearly continuous adiabatic heating, to address the limitations of the discrete point approach.
 
 ### Heating Curve Method
 
-The heating curve method, implemented in `heatingcurve_method.py`, involves nearly continuous adiabatic heating to determine the melting point. This method is expected to provide a more accurate estimation of the melting point by reducing the effects of superheating.
+The heating curve method, implemented in `heatingcurve_method.py`, involves nearly continuous adiabatic heating to determine the melting point.
 
 The process involves:
 
@@ -41,6 +36,7 @@ The script ensures that no more than 500 atoms are present in the simulation box
 
 ### Two-Phase Coexistence Method
 
+The two-phase coexistence method predicts melting points by equilibrating a solid and liquid structure in contact under molecular dynamics simulations until they reach a steady state.
 
 #### 1. Creating Solid and Liquid Structures
 
