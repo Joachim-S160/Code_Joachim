@@ -41,46 +41,41 @@ The script ensures that no more than 500 atoms are present in the simulation box
 
 ### Two-Phase Coexistence Method
 
-The two-phase coexistence method, implemented in `Meltingpoints_2phase_coexistence.py`, involves performing molecular dynamics simulations on both solid and liquid phases of a material to find the temperature at which both phases coexist.
 
-The process involves:
+#### 1. Creating Solid and Liquid Structures
 
-1. **Relaxing the Solid Structure:** The structure is relaxed to ensure that atoms are in positions of lower potential energy. This step is performed using the `relax.py` script, which uses the CHGNet model to optimize the atomic positions of the structure while keeping the cell size fixed.
+The script `Meltingpoints_2phase_coexistence.py` is used to create the solid and liquid phases of the material. This involves:
+- Loading the initial structure from a CIF file.
+- Relaxing the structure to optimize atomic positions and cell size.
+- Generating supercells for both the solid and liquid phases.
+- Performing molecular dynamics simulations to obtain the liquid phase at the desired temperature.
 
-2. **Combining Structures:** After relaxation, the `Combining_structures.py` script combines the relaxed solid and fluid structures into a single structure, incorporating a vacuum layer to separate the phases and avoid interactions at the boundaries. This combined structure is saved as a CIF file and used for further simulations.
+#### 2. Combining Solid and Liquid Structures
 
-3. **Running Molecular Dynamics Simulations:** Molecular dynamics simulations are then conducted on the combined structure to determine the melting point. The `Meltingpoints_2phase_coexistence.py` script runs these simulations and analyzes the phase coexistence to estimate the melting temperature.
+The script `Combining_structures.py` combines the solid and liquid phases into a single structure with a vacuum layer between them. The key steps include:
+- Loading the solid and liquid phase structures.
+- Creating a new lattice with an appropriate vacuum layer.
+- Combining the two phases into one structure and saving it as a CIF file.
 
-**Important Note:** Ensure that the structure is relaxed before combining phases or running simulations to avoid instability and inaccuracies.
+#### 3. NVE Simulation
 
-#### Relaxation Script
+The script `NVE.py` performs the NVE molecular dynamics simulation on the combined structure. The steps include:
+- Expanding the combined structure if necessary.
+- Performing ionic relaxation to optimize atomic positions while keeping the cell size fixed.
+- Initializing velocities according to the desired temperature.
+- Running the NVE molecular dynamics simulation to estimate the melting point.
 
-The `relax.py` script is used to relax a structure before combining phases or running molecular dynamics simulations. This script performs the following tasks:
 
-- **Loading the Structure and Model:** It loads the structure from an input file and the CHGNet model.
-- **Performing Relaxation:** It performs ionic relaxation to minimize the potential energy of the structure while keeping the cell size fixed.
-- **Saving the Relaxed Structure:** The relaxed structure is saved to a CIF file for further use in combining structures or running simulations.
+## Dependencies
 
-#### Combining Structures
+- `chgnet` for CHGNet model and molecular dynamics simulations.
+- `pymatgen` for structure manipulation and CIF file handling.
+- `ase` for molecular dynamics and structure visualization.
+- `numpy` and `matplotlib` for numerical operations and plotting.
 
-The `Combining_structures.py` script combines the solid and fluid phases into a single structure for the two-phase coexistence method. The script performs the following steps:
 
-1. **Loading Structures:** It loads the solid and fluid structures from CIF files.
-2. **Creating Vacuum Layer:** It adds a vacuum layer between the solid and fluid phases to prevent interactions at the boundaries.
-3. **Combining Structures:** It places the solid and fluid phases into a combined lattice with the vacuum layer and saves the final structure as a CIF file.
+## Notes
 
-#### NVE Simulation Script
+- Ensure that the CIF files and GPU settings are properly specified in each script.
+- The scripts assume that the lattice parameters and angles of the solid and liquid phases are compatible for combining.
 
-The `NVE.py` script runs an NVE (constant Number of particles, Volume, and Energy) molecular dynamics simulation. This script performs:
-
-1. **Loading the Structure:** It reads the structure from a CIF file using ASE.
-2. **Structure Expansion and Relaxation:** It expands the structure slightly, performs relaxation to minimize potential energy, and saves the relaxed structure.
-3. **Running the NVE Simulation:** It initializes the simulation with Maxwell-Boltzmann distributed velocities at the specified temperature and runs the simulation, storing the trajectory and log files.
-
-**Usage of `NVE.py`:**
-
-- The script begins by loading the CHGNet model and the structure from an input file.
-- It optionally expands the structure and performs ionic relaxation.
-- It then sets up and runs an NVE molecular dynamics simulation, storing results in trajectory and log files.
-
-This section ensures that structures are properly prepared and simulations are conducted accurately, contributing to reliable melting point predictions.
